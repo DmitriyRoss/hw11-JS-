@@ -1,0 +1,64 @@
+<html>
+
+<head>
+    <title>JAVASCRIPT</title>
+</head>
+
+<body>
+    <script>
+        // ЗАДАНИЯ ДЛЯ РАЗМИНКИ!!!!!!)))
+
+
+        //1) Есть код ! с помощью async await реализуем правильную последовательность!!
+        
+        console.log('2')
+        console.log('3')
+        setTimeout(() => console.log('4'), 300);
+        console.log('5')
+        let pr1 = new Promise((res,rej) => {
+            setTimeout(() => res('1'), 1300)
+        });
+        let pr2 = new Promise((res,rej) => {
+            setTimeout(() => res('4'), 300)
+        });
+        async function s() {
+            await pr1
+            await pr2
+            console.log(pr1)
+            console.log('2')
+            console.log('3')
+            console.log(pr2)
+            console.log('5')
+        }
+
+        // 2) Есть роуты!! Делаем через async await то что в предыдущей!
+        // https://playwithpromise.herokuapp.com/api/order-review/last - вернет обьект с id такой( 5dcb2558526eb500173b129d )
+        // после чего используя id делаем другой запрос
+        // https://playwithpromise.herokuapp.com/api/order-review/getid/{id} 
+        // https://playwithpromise.herokuapp.com/api/order-system/product/{productId}
+        function sendRequest(url, method) {
+            return new Promise((res, rej) => {
+                var Req = new XMLHttpRequest();
+                Req.onload = function () {
+                    if (!this.responseText) rej('BYE');
+                    res(JSON.parse(this.responseText));
+                }
+                Req.open(method, url);
+                Req.send();
+            });
+        }
+        let sended = await sendRequest('https://playwithpromise.herokuapp.com/api/order-review/last', 'GET');
+        if(sended) {
+            let returned = await sendRequest(`https://playwithpromise.herokuapp.com/api/order-review/getid/${result._id}`, 'GET');
+            const first = returned.orderList[0].productId;
+            const second = returned.orderList[1].productId;
+            let finish = await Promise.all([sendRequest(`https://playwithpromise.herokuapp.com/api/order-system/product/${first}`), sendRequest(`https://playwithpromise.herokuapp.com/api/order-system/product/${second}`)]);
+            console.log(finish)
+        }
+
+
+
+    </script>
+</body>
+
+</html>
